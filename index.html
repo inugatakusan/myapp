@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Calendar & Tasks</title>
+    <title>Pixel Tasks</title>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,48 +20,25 @@
                 <div class="pixel-clock">----/--/--</div>
                 <div class="pixel-date">--- / ---</div>
             </div>
-
-            <div class="schedule-section">
-                <p class="no-events">No events</p>
-            </div>
         </div>
 
         <div class="panel right-panel">
             <div class="header-row">
                 <span class="pixel-label">. TASKS</span>
-                
-                <div class="header-controls">
-                    <div class="filter-tabs">
-                        <button type="button" class="filter-tab active" data-filter="ALL">ALL</button>
-                        <button type="button" class="filter-tab" data-filter="TASK">TASK</button>
-                        <button type="button" class="filter-tab" data-filter="MTG">MTG</button>
-                    </div>
-                    <button type="button" class="clean-button" id="btn-clean" title="Clear completed">CLEAN</button>
-                </div>
+                <button type="button" class="clean-button" id="btn-clean" title="Clear completed">CLEAN</button>
             </div>
 
             <div class="task-list"></div>
 
             <div class="input-area-wrapper">
-                <div class="type-selector">
-                    <button type="button" class="type-btn active" id="btn-task">TASK</button>
-                    <button type="button" class="type-btn" id="btn-mtg">MTG</button>
-                </div>
-
                 <div class="input-section">
-                    <input type="time" id="event-time" class="pixel-time-input hidden">
-                    
-                    <div class="color-picker-wrapper hidden" id="mtg-color-wrapper">
-                        <input type="color" id="event-color" value="#ec4899">
-                    </div>
-
-                    <div class="priority-selector" id="task-priority-wrapper">
+                    <div class="priority-selector">
                         <button type="button" class="priority-btn high active" data-priority="HIGH">HIGH</button>
                         <button type="button" class="priority-btn mid" data-priority="MID">MID</button>
                         <button type="button" class="priority-btn low" data-priority="LOW">LOW</button>
                     </div>
 
-                    <input type="text" placeholder="Add new item..." class="pixel-input">
+                    <input type="text" placeholder="Add new task..." class="pixel-input">
                     <button class="add-button">+</button>
                 </div>
             </div>

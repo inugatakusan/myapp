@@ -1,66 +1,34 @@
 let events = [];
 
-// データの安全な読み込み
 function loadData() {
     try {
         const savedData = localStorage.getItem('pixel_events');
         if (savedData) {
             events = JSON.parse(savedData);
-            // 念のため読み込んだデータが配列であることを確認
-            if (!Array.isArray(events)) {
-                events = [];
-            }
+            if (!Array.isArray(events)) events = [];
+            events.forEach(ev => {
+                if (!ev.children) ev.children = [];
+                if (ev.showInput === undefined) ev.showInput = false; // 開閉状態の初期化安全処理
+            });
         } else {
             events = [];
         }
     } catch (e) {
-        console.error("データ読み込みエラーのためリセットします", e);
         events = [];
     }
 }
 
-// 各種画面パーツの取得
 const taskList = document.querySelector('.task-list');
-const scheduleSection = document.querySelector('.schedule-section');
 const pixelInput = document.querySelector('.pixel-input');
 const addButton = document.querySelector('.add-button');
 const btnClean = document.getElementById('btn-clean');
 
-const btnTask = document.getElementById('btn-task');
-const btnMtg = document.getElementById('btn-mtg');
-const timeInput = document.getElementById('event-time');
-const mtgColorWrapper = document.getElementById('mtg-color-wrapper');
-const taskPriorityWrapper = document.getElementById('task-priority-wrapper');
-const colorPicker = document.getElementById('event-color');
-
 const clockDiv = document.querySelector('.pixel-clock');
 const dateDiv = document.querySelector('.pixel-date');
 
-let currentMode = 'TASK'; 
 let selectedPriority = 'HIGH'; 
-let currentFilter = 'ALL'; 
 
-// 入力モード：TASK
-btnTask.addEventListener('click', () => {
-    currentMode = 'TASK';
-    btnTask.classList.add('active');
-    btnMtg.classList.remove('active');
-    taskPriorityWrapper.classList.remove('hidden');
-    timeInput.classList.add('hidden');
-    mtgColorWrapper.classList.add('hidden');
-});
-
-// 入力モード：MTG
-btnMtg.addEventListener('click', () => {
-    currentMode = 'MTG';
-    btnMtg.classList.add('active');
-    btnTask.classList.remove('active');
-    taskPriorityWrapper.classList.add('hidden');
-    timeInput.classList.remove('hidden');
-    mtgColorWrapper.classList.remove('hidden');
-});
-
-// 優先度ボタンの選択変更
+// 優先度ボタン切り替え
 const priorityButtons = document.querySelectorAll('.priority-btn');
 priorityButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -70,33 +38,26 @@ priorityButtons.forEach(btn => {
     });
 });
 
-// 表示切り替えフィルタータブ
-const filterTabs = document.querySelectorAll('.filter-tab');
-filterTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        filterTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentFilter = tab.getAttribute('data-filter');
-        renderEvents(); 
-    });
-});
-
 // 完了済み一括削除（CLEAN）
 btnClean.addEventListener('click', () => {
-    const hasCompleted = events.some(event => event.completed);
+    const hasCompleted = events.some(ev => ev.completed || ev.children.some(ch => ch.completed));
     if (!hasCompleted) {
         alert("完了済みのタスクはありません");
         return;
     }
     
-    if (confirm("完了済みのタスクをすべて削除しますか？")) {
-        events = events.filter(event => !event.completed);
+    if (confirm("完了済みのタスク・子タスクを削除しますか？")) {
+        events.forEach(ev => {
+            ev.children = ev.children.filter(ch => !ch.completed);
+        });
+        events = events.filter(ev => !ev.completed);
+        
         saveData();
         renderEvents();
     }
 });
 
-// 今日の日付を自動表示する関数
+// 日付表示
 function updateDisplayDate() {
     const today = new Date();
     const year = today.getFullYear();
@@ -114,63 +75,115 @@ function updateDisplayDate() {
 
 const priorityWeight = { 'HIGH': 1, 'MID': 2, 'LOW': 3 };
 
-// データ並び替え
 function sortEvents() {
     events.sort((a, b) => {
-        if (a.type === 'MTG' && b.type === 'MTG') {
-            const timeA = a.time || "--:--";
-            const timeB = b.time || "--:--";
-            return timeA.localeCompare(timeB);
-        }
-        if (a.type === 'TASK' && b.type === 'TASK') {
-            const weightA = priorityWeight[a.priority] || 4;
-            const weightB = priorityWeight[b.priority] || 4;
-            return weightA - weightB;
-        }
-        return 0;
+        const weightA = priorityWeight[a.priority] || 4;
+        const weightB = priorityWeight[b.priority] || 4;
+        return weightA - weightB;
     });
 }
 
-// 「＋」追加ボタン処理
+// 【親タスク】追加
 addButton.addEventListener('click', () => {
     const title = pixelInput.value.trim();
-
     if (title === "") {
-        alert("内容を入力してください");
+        alert("タスクを入力してください");
         return;
     }
 
     let newEvent = {
         id: Date.now(),
         title: title,
-        type: currentMode,
-        completed: false
+        type: 'TASK',
+        priority: selectedPriority,
+        completed: false,
+        showInput: false, // 初期状態は入力欄を隠す
+        children: []
     };
-
-    if (currentMode === 'MTG') {
-        newEvent.time = timeInput.value || "--:--";
-        newEvent.color = colorPicker.value;
-    } else {
-        newEvent.priority = selectedPriority; 
-    }
 
     events.push(newEvent);
     sortEvents();
     saveData();
     renderEvents();
-
     pixelInput.value = "";
-    timeInput.value = "";
-    colorPicker.value = "#ec4899";
 });
 
-// チェックボタンをクリックしたときの完了・未完了の切り替え
-function toggleEventStatus(id) {
-    events = events.map(event => {
-        if (event.id === id) {
-            return { ...event, completed: !event.completed };
+// 【新機能】右上の「＋」ボタンで入力欄の表示/非表示を切り替える関数
+function toggleSubtaskInput(parentId) {
+    events = events.map(ev => {
+        if (ev.id === parentId) {
+            const nextState = !ev.showInput;
+            return { ...ev, showInput: nextState };
         }
-        return event;
+        return ev;
+    });
+    saveData();
+    renderEvents();
+
+    // 入力欄を開いた場合、即座にそこにフォーカスを当てる
+    const targetInput = document.querySelector(`input[data-parent-id="${parentId}"]`);
+    if (targetInput) targetInput.focus();
+}
+
+// インライン子タスク追加（Enterキー連動）
+function handleSubtaskKeydown(e, parentId) {
+    if (e.key === 'Enter') {
+        const title = e.target.value.trim();
+        if (title === "") return;
+
+        events = events.map(ev => {
+            if (ev.id === parentId) {
+                ev.children.push({
+                    id: Date.now() + Math.random(),
+                    title: title,
+                    completed: false
+                });
+            }
+            return ev;
+        });
+
+        saveData();
+        renderEvents();
+
+        // 連続で打ち込めるように、開いた状態の入力欄に再度フォーカス
+        const nextInput = document.querySelector(`input[data-parent-id="${parentId}"]`);
+        if (nextInput) nextInput.focus();
+    }
+}
+
+// 親タスクの完了切り替え
+function toggleParentStatus(id) {
+    events = events.map(ev => {
+        if (ev.id === id) {
+            const nextStatus = !ev.completed;
+            const updatedChildren = ev.children.map(ch => ({ ...ch, completed: nextStatus }));
+            return { ...ev, completed: nextStatus, children: updatedChildren };
+        }
+        return ev;
+    });
+    saveData();
+    renderEvents();
+}
+
+// 子タスク単体の完了切り替え
+function toggleChildStatus(parentId, childId) {
+    events = events.map(ev => {
+        if (ev.id === parentId) {
+            ev.children = ev.children.map(ch => {
+                if (ch.id === childId) {
+                    return { ...ch, completed: !ch.completed };
+                }
+                return ch;
+            });
+            
+            const allChildrenDone = ev.children.length > 0 && ev.children.every(ch => ch.completed);
+            if (allChildrenDone) {
+                ev.completed = true;
+            } else if (ev.children.some(ch => !ch.completed)) {
+                ev.completed = false;
+            }
+        }
+        return ev;
     });
     saveData();
     renderEvents();
@@ -180,63 +193,69 @@ function saveData() {
     localStorage.setItem('pixel_events', JSON.stringify(events));
 }
 
-// 画面への描画処理
+// 画面描画
 function renderEvents() {
-    if (!taskList || !scheduleSection) return;
-    
+    if (!taskList) return;
     taskList.innerHTML = "";
-    scheduleSection.innerHTML = "";
-
-    let mtgCount = 0;
 
     events.forEach(event => {
-        // 1. 左側：カレンダータイムライン（すべてのMTGを表示）
-        if (event.type === 'MTG') {
-            mtgCount++;
-            const scheduleItem = document.createElement('div');
-            scheduleItem.className = `schedule-item ${event.completed ? 'is-completed' : ''}`;
-            scheduleItem.innerHTML = `
-                <span class="schedule-time" style="color: ${event.completed ? '#cbd5e1' : event.color}">${event.time}</span>
-                <span class="schedule-title">${event.title}</span>
-            `;
-            scheduleSection.appendChild(scheduleItem);
-        }
+        const taskCard = document.createElement('div');
+        taskCard.className = `task-card ${event.completed ? 'is-completed' : ''}`;
 
-        // 2. 右側：タスクリスト（タブによる条件絞り込み）
-        if (currentFilter === 'ALL' || currentFilter === event.type) {
-            const taskCard = document.createElement('div');
-            taskCard.className = `task-card ${event.completed ? 'is-completed' : ''}`;
-
-            if (event.type === 'MTG') {
-                taskCard.innerHTML = `
-                    <div class="task-check" style="border-color: ${event.completed ? '#cbd5e1' : event.color}; background-color: ${event.completed ? event.color : 'transparent'}" onclick="toggleEventStatus(${event.id})"></div>
-                    <div class="task-info">
-                        <div class="task-title">${event.title}</div>
-                        <div class="task-time">${event.time} <span class="badge-mtg">MTG</span></div>
-                    </div>
-                `;
-            } else {
-                const pClass = (event.priority || 'HIGH').toLowerCase();
-                taskCard.innerHTML = `
-                    <div class="task-check" style="background-color: ${event.completed ? '#94a3b8' : 'transparent'}" onclick="toggleEventStatus(${event.id})"></div>
-                    <div class="task-info">
-                        <div class="task-title">${event.title}</div>
-                        <div class="task-tags">
-                            <span class="priority-badge ${pClass}">${event.priority}</span>
+        const pClass = (event.priority || 'HIGH').toLowerCase();
+        
+        // 子タスク表示エリアの作成
+        let subtaskAreaHtml = "";
+        
+        // 子タスクが1つでもある、または「入力欄を表示するモード」の時だけ枠を作る
+        if ((event.children && event.children.length > 0) || event.showInput) {
+            subtaskAreaHtml = `<div class="subtask-container">`;
+            
+            // 子タスク一覧のレンダリング
+            if (event.children && event.children.length > 0) {
+                event.children.forEach(child => {
+                    subtaskAreaHtml += `
+                        <div class="subtask-item ${child.completed ? 'is-completed' : ''}">
+                            <div class="subtask-check" style="background-color: ${child.completed ? '#94a3b8' : 'transparent'}" onclick="toggleChildStatus(${event.id}, ${child.id})"></div>
+                            <span class="subtask-title">${child.title}</span>
                         </div>
+                    `;
+                });
+            }
+            
+            // 右上の＋が押されている時（showInput === true）だけ入力行をドッキング
+            if (event.showInput) {
+                subtaskAreaHtml += `
+                    <div class="subtask-input-row">
+                        <div class="subtask-input-icon">↳</div>
+                        <input type="text" class="subtask-inline-input" 
+                               placeholder="Add subtask..." 
+                               data-parent-id="${event.id}"
+                               onkeydown="handleSubtaskKeydown(event, ${event.id})">
                     </div>
                 `;
             }
-            taskList.appendChild(taskCard);
+            
+            subtaskAreaHtml += `</div>`;
         }
-    });
 
-    if (mtgCount === 0) {
-        scheduleSection.innerHTML = '<p class="no-events">No events</p>';
-    }
+        taskCard.innerHTML = `
+            <div class="task-main-row">
+                <div class="task-check" style="background-color: ${event.completed ? '#94a3b8' : 'transparent'}" onclick="toggleParentStatus(${event.id})"></div>
+                <div class="task-info">
+                    <div class="task-title">${event.title}</div>
+                    <div class="task-tags">
+                        <span class="priority-badge ${pClass}">${event.priority}</span>
+                    </div>
+                </div>
+                <button type="button" class="add-subtask-btn ${event.showInput ? 'is-active' : ''}" onclick="toggleSubtaskInput(${event.id})" title="Toggle subtask input">＋</button>
+            </div>
+            ${subtaskAreaHtml}
+        `;
+        taskList.appendChild(taskCard);
+    });
 }
 
-// ➔➔➔【超重要】すべての準備が終わった後にこの2つを確実に実行する
 loadData();
 updateDisplayDate();
 renderEvents();

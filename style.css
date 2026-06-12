@@ -50,37 +50,6 @@ body {
     letter-spacing: 2px;
 }
 
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.filter-tabs {
-    display: flex;
-    gap: 4px;
-    background: #e2e8f0;
-    padding: 3px;
-    border-radius: 12px;
-}
-
-.filter-tab {
-    background: transparent;
-    border: none;
-    font-size: 11px;
-    padding: 4px 12px;
-    border-radius: 9px;
-    cursor: pointer;
-    color: #64748b;
-    font-weight: bold;
-    transition: all 0.15s ease;
-}
-
-.filter-tab.active {
-    background: #1e293b;
-    color: white;
-}
-
 .clean-button {
     background-color: #ef4444;
     color: white;
@@ -117,38 +86,15 @@ body {
     margin-top: 5px;
 }
 
-.schedule-section {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    overflow-y: auto;
-}
-
-.no-events {
-    color: #94a3b8;
-}
-
-.schedule-item {
-    display: flex;
-    gap: 15px;
-    font-size: 18px;
-    color: #334155;
-    border-bottom: 1px dashed #cbd5e1;
-    padding-bottom: 5px;
-    transition: all 0.2s;
-}
-
-.schedule-time {
-    font-weight: bold;
-}
-
+/* タスク（右側リスト） */
 .task-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-top: 15px;
     overflow-y: auto;
-    max-height: 400px;
+    max-height: 440px;
+    padding-right: 5px;
 }
 
 .task-card {
@@ -157,10 +103,17 @@ body {
     border-radius: 15px;
     padding: 12px 15px;
     display: flex;
-    align-items: center;
-    gap: 15px;
+    flex-direction: column;
+    gap: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     transition: all 0.2s ease;
+}
+
+.task-main-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
 }
 
 .task-check {
@@ -181,26 +134,113 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
 }
 
 .task-title {
     font-size: 16px;
     color: #1e293b;
+}
+
+/* 子タスクコンテナ（枠線は中身がある時だけ） */
+.subtask-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-left: 37px;
+    padding-top: 6px;
+    border-top: 1px dashed #f1f5f9;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     transition: all 0.2s;
 }
 
-.task-time {
-    font-size: 12px;
-    color: #94a3b8;
+.subtask-check {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
+.subtask-title {
+    font-size: 14px;
+    color: #475569;
+}
+
+/* インライン子タスク入力行 */
+.subtask-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.subtask-input-icon {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: bold;
+    user-select: none;
+}
+
+.subtask-inline-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid transparent;
+    outline: none;
+    font-size: 13px;
+    color: #475569;
+    padding: 2px 0;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.subtask-inline-input:focus {
+    border-bottom: 1px dashed #cbd5e1;
+}
+
+/* 右上のピクセル風開閉プラスボタン */
+.add-subtask-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #64748b;
+    border-radius: 6px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+
+.add-subtask-btn:hover, .add-subtask-btn.is-active {
+    background: #1e293b;
+    color: white;
+    border-color: #1e293b;
+}
+
+/* 完了状態 */
 .task-card.is-completed {
     opacity: 0.5;
     background: #f8fafc;
 }
+.task-card.is-completed .task-title {
+    text-decoration: line-through;
+    color: #94a3b8;
+}
 
-.task-card.is-completed .task-title,
-.schedule-item.is-completed .schedule-title {
+.subtask-item.is-completed {
+    opacity: 0.6;
+}
+.subtask-item.is-completed .subtask-title {
     text-decoration: line-through;
     color: #94a3b8;
 }
@@ -215,43 +255,12 @@ body {
 .priority-badge.mid { background-color: #fdf4ff; color: #d946ef; border: 1px solid #f5d0fe; }
 .priority-badge.low { background-color: #f8fafc; color: #64748b; border: 1px solid #cbd5e1; }
 
-.badge-mtg {
-    background-color: #f0fdf4;
-    color: #22c55e;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-}
-
+/* 入力エリア */
 .input-area-wrapper {
     margin-top: auto;
     display: flex;
     flex-direction: column;
     gap: 8px;
-}
-
-.type-selector {
-    display: flex;
-    gap: 5px;
-}
-
-.type-btn {
-    background: #e2e8f0;
-    border: none;
-    padding: 4px 12px;
-    font-size: 12px;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    color: #64748b;
-    transition: all 0.2s;
-}
-
-.type-btn.active {
-    background: white;
-    color: #1e293b;
-    font-weight: bold;
-    border: 1px solid #e2e8f0;
-    border-bottom: none;
 }
 
 .input-section {
@@ -260,15 +269,8 @@ body {
     gap: 10px;
     background: white;
     padding: 10px;
-    border-radius: 0 15px 15px 15px;
+    border-radius: 15px;
     border: 1px solid #e2e8f0;
-}
-
-.pixel-time-input {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 5px;
-    color: #334155;
 }
 
 .priority-selector {
@@ -289,20 +291,6 @@ body {
 .priority-btn.high.active { background: #fee2e2; color: #ef4444; border-color: #fca5a5; }
 .priority-btn.mid.active { background: #f3e8ff; color: #a855f7; border-color: #d8b4fe; }
 .priority-btn.low.active { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
-
-.color-picker-wrapper {
-    display: flex;
-    align-items: center;
-}
-
-#event-color {
-    border: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    background: none;
-}
 
 .pixel-input {
     flex: 1;
