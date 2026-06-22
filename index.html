@@ -20,11 +20,30 @@
                 <div class="pixel-clock">----/--/--</div>
                 <div class="pixel-date">--- / ---</div>
             </div>
+
+            <div class="fave-image-container" id="fave-container">
+                <div class="fave-placeholder" id="fave-placeholder">
+                    <span>Click to set your Favorite Image ❤️</span>
+                </div>
+                <img id="fave-img" src="" alt="Favorite" class="hidden">
+                <input type="file" id="fave-input" accept="image/*" class="hidden">
+                <button type="button" class="change-fave-btn hidden" id="btn-change-fave">CHANGE</button>
+            </div>
         </div>
 
         <div class="panel right-panel">
             <div class="header-row">
                 <span class="pixel-label">. TASKS</span>
+                
+                <div class="view-tabs">
+                    <button type="button" class="tab-btn active" data-tab="ALL">ALL</button>
+                    <button type="button" class="tab-btn" data-tab="CAT1" title="ダブルクリックで名前変更"><span class="tab-text" id="text-tab-cat1">TASK</span></button>
+                    <button type="button" class="tab-btn" data-tab="CAT2" title="ダブルクリックで名前変更"><span class="tab-text" id="text-tab-cat2">MTG</span></button>
+                    <button type="button" class="tab-btn" data-tab="CAT3" title="ダブルクリックで名前変更"><span class="tab-text" id="text-tab-cat3">CAT3</span></button>
+                    <button type="button" class="tab-btn" data-tab="CAT4" title="ダブルクリックで名前変更"><span class="tab-text" id="text-tab-cat4">CAT4</span></button>
+                    <button type="button" class="tab-btn" data-tab="CAT5" title="ダブルクリックで名前変更"><span class="tab-text" id="text-tab-cat5">CAT5</span></button>
+                </div>
+                
                 <button type="button" class="clean-button" id="btn-clean" title="Clear completed">CLEAN</button>
             </div>
 
@@ -32,14 +51,26 @@
 
             <div class="input-area-wrapper">
                 <div class="input-section">
-                    <div class="priority-selector">
-                        <button type="button" class="priority-btn high active" data-priority="HIGH">HIGH</button>
-                        <button type="button" class="priority-btn mid" data-priority="MID">MID</button>
-                        <button type="button" class="priority-btn low" data-priority="LOW">LOW</button>
+                    <div class="selectors-row">
+                        <div class="priority-selector">
+                            <button type="button" class="priority-btn high active" data-priority="HIGH">HIGH</button>
+                            <button type="button" class="priority-btn mid" data-priority="MID">MID</button>
+                            <button type="button" class="priority-btn low" data-priority="LOW">LOW</button>
+                        </div>
+                        
+                        <div class="category-selector">
+                            <button type="button" class="cat-btn active" data-cat="CAT1" id="btn-cat-cat1">TASK</button>
+                            <button type="button" class="cat-btn" data-cat="CAT2" id="btn-cat-cat2">MTG</button>
+                            <button type="button" class="cat-btn" data-cat="CAT3" id="btn-cat-cat3">CAT3</button>
+                            <button type="button" class="cat-btn" data-cat="CAT4" id="btn-cat-cat4">CAT4</button>
+                            <button type="button" class="cat-btn" data-cat="CAT5" id="btn-cat-cat5">CAT5</button>
+                        </div>
                     </div>
 
-                    <input type="text" placeholder="Add new task..." class="pixel-input">
-                    <button class="add-button">+</button>
+                    <div class="input-main-row">
+                        <input type="text" placeholder="Add new task..." class="pixel-input">
+                        <button class="add-button">+</button>
+                    </div>
                 </div>
             </div>
         </div>
