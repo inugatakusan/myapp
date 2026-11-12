@@ -11,6 +11,7 @@
 <body>
 
     <div class="app-container">
+        <!-- 左側：カレンダー ＆ 推し画像エリア -->
         <div class="panel left-panel">
             <div class="header-row">
                 <span class="pixel-label">. CALENDAR</span>
@@ -21,6 +22,7 @@
                 <div class="pixel-date">--- / ---</div>
             </div>
 
+            <!-- 推し画像表示エリア -->
             <div class="fave-image-container" id="fave-container">
                 <div class="fave-placeholder" id="fave-placeholder">
                     <span>Click to set your Favorite Image ❤️</span>
@@ -31,10 +33,12 @@
             </div>
         </div>
 
+        <!-- 右側：タスク管理 -->
         <div class="panel right-panel">
             <div class="header-row">
                 <span class="pixel-label">. TASKS</span>
                 
+                <!-- ダブルクリックで編集できる5つのタブ -->
                 <div class="view-tabs">
                     <button type="button" class="tab-btn active" data-tab="ALL">ALL</button>
                     <button type="button" class="tab-btn" data-tab="CAT1" title="ダブルクリックで名前変更"><span class="tab-text" id="text-tab-cat1">TASK</span></button>
@@ -44,20 +48,27 @@
                     <button type="button" class="tab-btn" data-tab="CAT5" title="ダブルクリックで名前変更"><span class="tab-text" id="text-tab-cat5">CAT5</span></button>
                 </div>
                 
-                <button type="button" class="clean-button" id="btn-clean" title="Clear completed">CLEAN</button>
+                <div class="header-actions">
+                    <button type="button" class="sort-button" id="btn-sort" title="Sort by priority">SORT</button>
+                    <button type="button" class="clean-button" id="btn-clean" title="Clear completed">CLEAN</button>
+                </div>
             </div>
 
+            <!-- タスク一覧が入るエリア -->
             <div class="task-list"></div>
 
+            <!-- 予定・タスクの入力フォーム -->
             <div class="input-area-wrapper">
                 <div class="input-section">
                     <div class="selectors-row">
+                        <!-- 優先度セレクター -->
                         <div class="priority-selector">
                             <button type="button" class="priority-btn high active" data-priority="HIGH">HIGH</button>
                             <button type="button" class="priority-btn mid" data-priority="MID">MID</button>
                             <button type="button" class="priority-btn low" data-priority="LOW">LOW</button>
                         </div>
                         
+                        <!-- 5つのカテゴリ選択ボタン -->
                         <div class="category-selector">
                             <button type="button" class="cat-btn active" data-cat="CAT1" id="btn-cat-cat1">TASK</button>
                             <button type="button" class="cat-btn" data-cat="CAT2" id="btn-cat-cat2">MTG</button>

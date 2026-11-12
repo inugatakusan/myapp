@@ -13,12 +13,11 @@ body {
     min-height: 100vh;
 }
 
-/* 元の写真通りの可愛いドット背景コンテナ */
 .app-container {
     background-color: #f3f4f6;
     background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
     background-size: 16px 16px;
-    width: 1000px; /* タブが5つに増えたため少しだけ横幅を広げました */
+    width: 1020px;
     height: 670px;
     border-radius: 30px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -48,13 +47,14 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 5px;
-    gap: 10px;
+    gap: 8px;
 }
 
 .pixel-label {
     font-size: 14px;
     color: #94a3b8;
     letter-spacing: 2px;
+    white-space: nowrap;
 }
 
 /* 5つの表示切り替えタブ */
@@ -64,7 +64,7 @@ body {
     background: #e2e8f0;
     padding: 3px;
     border-radius: 10px;
-    max-width: 520px;
+    max-width: 460px;
     overflow-x: auto;
 }
 
@@ -87,7 +87,6 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* タブ内編集インプット */
 .tab-edit-input {
     font-family: inherit;
     font-size: 11px;
@@ -98,12 +97,37 @@ body {
     outline: none;
 }
 
+/* ヘッダー右側のボタン群（SORT / CLEAN） */
+.header-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.sort-button {
+    background-color: #64748b;
+    color: white;
+    border: none;
+    font-size: 11px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 0px #334155;
+    transition: all 0.1s;
+}
+
+.sort-button:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
 .clean-button {
     background-color: #ef4444;
     color: white;
     border: none;
     font-size: 11px;
-    padding: 7px 12px;
+    padding: 7px 10px;
     border-radius: 9px;
     cursor: pointer;
     font-weight: bold;
@@ -178,7 +202,7 @@ body {
     cursor: pointer;
 }
 
-/* タスク一覧スクロールエリア（元の綺麗なカードデザイン） */
+/* タスク一覧スクロールエリア */
 .task-list {
     display: flex;
     flex-direction: column;
@@ -187,8 +211,10 @@ body {
     overflow-y: auto;
     max-height: 420px;
     padding-right: 5px;
+    padding-bottom: 10px;
 }
 
+/* タスクカード＆ドラッグ＆ドロップ用スタイル */
 .task-card {
     background: white;
     border: 1px solid #e2e8f0;
@@ -198,12 +224,62 @@ body {
     flex-direction: column;
     gap: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    position: relative;
+}
+
+.task-card.is-dragging {
+    opacity: 0.45;
+    transform: scale(0.98);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
+
+.task-card.drag-over-top {
+    border-top: 3px dashed #3b82f6;
+}
+
+.task-card.drag-over-bottom {
+    border-bottom: 3px dashed #3b82f6;
+}
+
+/* ドラッグ用のつまみハンドル */
+.drag-handle {
+    color: #cbd5e1;
+    cursor: grab;
+    font-size: 14px;
+    letter-spacing: -2px;
+    padding: 4px 2px;
+    user-select: none;
+    transition: color 0.15s;
+    flex-shrink: 0;
+}
+
+.drag-handle:hover {
+    color: #64748b;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.subtask-drag-handle {
+    color: #cbd5e1;
+    cursor: grab;
+    font-size: 11px;
+    letter-spacing: -2px;
+    padding: 2px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.subtask-drag-handle:hover {
+    color: #64748b;
 }
 
 .task-main-row {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
     width: 100%;
 }
 
@@ -230,7 +306,6 @@ body {
 }
 .subtask-title { font-size: 14px; color: #475569; }
 
-/* ダブルクリックインライン編集 */
 .edit-inline-input {
     width: 100%;
     border: 1px solid #cbd5e1;
@@ -248,7 +323,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-left: 37px;
+    margin-left: 42px;
     padding-top: 6px;
     border-top: 1px dashed #f1f5f9;
 }
@@ -256,7 +331,22 @@ body {
 .subtask-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    padding: 2px 4px;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.subtask-item.is-dragging {
+    opacity: 0.4;
+}
+
+.subtask-item.drag-over-top {
+    border-top: 2px dashed #3b82f6;
+}
+
+.subtask-item.drag-over-bottom {
+    border-bottom: 2px dashed #3b82f6;
 }
 
 .subtask-check {
@@ -321,7 +411,7 @@ body {
 .subtask-item.is-completed { opacity: 0.6; }
 .subtask-item.is-completed .subtask-title { text-decoration: line-through; color: #94a3b8; }
 
-/* ★改善：優先度を文字ではなく「オシャレなカラーの丸ドット」で表現 */
+/* 優先度色ドット */
 .task-tags { display: flex; align-items: center; gap: 8px; }
 .priority-dot-badge {
     display: inline-block;
@@ -373,7 +463,6 @@ body {
     flex-wrap: wrap;
 }
 
-/* ★改善：優先度ボタンの選択カラー強化（綺麗に塗りつぶし） */
 .priority-btn, .cat-btn {
     border: 1px solid #cbd5e1;
     background: #f8fafc;
@@ -395,7 +484,6 @@ body {
 .priority-btn.low { border-color: #10b981; color: #10b981; }
 .priority-btn.low.active { background: #10b981; color: white; border-color: #10b981; }
 
-/* カテゴリボタンのアクティブ状態 */
 .cat-btn { border-color: #475569; color: #475569; }
 .cat-btn.active { background: #475569; color: white; }
 
